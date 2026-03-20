@@ -36,7 +36,8 @@ def handle_client(client_socket, client_name):
             sockets = list(clients.values())
         
         for socket in sockets:
-            socket.send(f"{client_name}: {message}".encode("utf-8"))
+            if socket != client_socket:
+                socket.send(f"{client_name}: {message}".encode("utf-8"))
     
 
 running = True
@@ -47,7 +48,7 @@ while running:
         target=handle_client,
         args=(client, client_name),
         daemon=True
-    )
+    ).start()
 
 
 
