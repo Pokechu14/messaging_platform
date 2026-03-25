@@ -1,13 +1,18 @@
 import socket
 import threading
+import sys
+import datetime
 
 clients = {}
 clients_lock = threading.Lock()
 
+servername = socket.gethostname()
+serverIP = socket.gethostbyname(servername)
+
 
 #initialize server
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-HOST = "192.168.100.12"
+HOST = serverIP
 PORT = 9090
 
 server.bind((HOST, PORT))
@@ -16,7 +21,7 @@ server.listen()
 
 def add_client():
     client, addr = server.accept()
-    client_name = client.recv(1024).decode("utf-8")
+    client_name = client.recv(1024).decode("utf-16")
     with clients_lock:
         clients[client_name] = client   #clients[example].send("example".encode("utf-8"))
     print(f"Succesfully connected to {client_name}!")
@@ -24,7 +29,8 @@ def add_client():
 
 def handle_client(client_socket, client_name):
     while True:
-        message = client_socket.recv(1024).decode("utf-8")
+        message = client_socket.recv(3024).decode("utf-16")
+        print message
         if message == "":
             with clients_lock:
                 if client_name in clients:
